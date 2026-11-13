@@ -15,7 +15,7 @@ Never share `.env.local`. The browser only calls this site's API; the token stay
 
 ## Vercel
 
-Import the source project into Vercel with framework preset Other, build command `npm run build`, and output directory `dist`. API routing is provided by `vercel.json`.
+Import the source project into Vercel with framework preset Other. Set the Root Directory to the repository root, where `vercel.json`, `package.json`, and `api/` are located. `vercel.json` builds the public files into `dist`, and Vercel serves `/api/upload`, `/api/gallery`, and `/api/photo` from the matching files in `api/`.
 Add `DRIME_API_TOKEN` and `DRIME_FOLDER_ID` in Vercel's project Environment Variables before deployment. Use the values from your private local file, not frontend variables or VITE-prefixed variables. Redeploy after changing environment variables.
 
 Test a real upload and gallery refresh on the deployed URL before printing a QR code linking to that URL. Localhost cannot be used by wedding guests.

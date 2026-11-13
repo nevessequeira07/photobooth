@@ -52,4 +52,19 @@ test('page initializes and every Add photos button opens the dialog', async()=> 
  assert.equal(vm.runInNewContext('selected.length',context),2);
  vm.runInNewContext('busy=true',context);camera.clicked=false;take.onclick();assert.equal(camera.clicked,false);
 
+ context.XMLHttpRequest=class {
+   upload={};
+   status=404;
+   response=null;
+   open(method,url) {
+     assert.equal(method,'POST');
+     assert.equal(url,'/api/upload');
+   }
+   setRequestHeader() {}
+   send() {
+     assert.equal(this.responseType,'json');
+     this.onload();
+   }
+ };
+ await assert.rejects(vm.runInNewContext("upload({},'Photo 1 of 1')",context), /Upload failed \(HTTP 404\)/);
 });

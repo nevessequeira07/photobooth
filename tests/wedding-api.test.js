@@ -112,12 +112,37 @@ test('upstream failure never exposes provider response or token',async()=> {
     })
   });const res=await call(api,'/api/gallery');assert.equal(res.statusCode,502);assert.ok(!res.data.includes('secret'));
 });
-test('Vercel rewrite serves the same gallery handler',async()=> {
-  const api=createApi( {
-    token:'secret',folderId:42,fetchImpl:async()=>json( {
-      data:[],last_page:1
-    })
-  });assert.equal((await call(api,'/api/index?route=gallery')).statusCode,200);
+test('Vercel entrypoints serve upload, gallery, and photo directly', async t => {
+  t.mock.method(globalThis, 'fetch', async (url, options) => {
+    const path = new URL(url).pathname;
+    if (path.endsWith('/uploads')) {
+      assert.equal(options.method, 'POST');
+      return json({fileEntry: entry});
+    }
+    if (path.endsWith('/file-entries/123/model')) return json({fileEntry: entry});
+    if (path.endsWith('/file-entries/123')) return new Response(jpeg);
+    return json({data: [], last_page: 1});
+  });
+  for (const [key, value] of Object.entries({DRIME_API_TOKEN: 'test-token', DRIME_FOLDER_ID: '42'})) {
+    const previous = process.env[key];
+    t.after(() => {
+      if (previous === undefined) delete process.env[key];
+      else process.env[key] = previous;
+    });
+    process.env[key] = value;
+  }
+
+  const upload = await call(require('../api/upload'), '/api/upload', 'POST', body);
+  assert.equal(upload.statusCode, 201);
+  assert.equal(JSON.parse(upload.data).photo.src, '/api/photo?id=123');
+
+  const gallery = await call(require('../api/gallery'), '/api/gallery?page=2');
+  assert.equal(gallery.statusCode, 200);
+  assert.equal(JSON.parse(gallery.data).page, 2);
+
+  const photo = await call(require('../api/photo'), '/api/photo?id=123');
+  assert.equal(photo.headers['Content-Type'], 'image/jpeg');
+  assert.deepEqual(photo.data, jpeg);
 });
 test('storage guard refuses new upload above soft album limit',async()=> {
   const api=createApi( {

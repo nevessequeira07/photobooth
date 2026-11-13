@@ -256,12 +256,17 @@ function upload(body,label) {
       if(e.lengthComputable)$('#upload-progress').textContent=`${label}: ${Math.round(e.loaded/e.total*100)}% sent — saving to the album…`;
     }; xhr.onload=()=> {
       try {
-        const data=JSON.parse(xhr.responseText);if(xhr.status<200||xhr.status>=300)throw Error(data.error||'Upload failed. Please retry.');resolve(data.photo);
+        const data=xhr.response;
+        if(xhr.status<200||xhr.status>=300) {
+          throw Error(data?.error||`Upload failed (HTTP ${xhr.status}). Please retry.`);
+        }
+        if(!data?.photo?.id)throw Error('The upload returned an unexpected response. Please retry.');
+        resolve(data.photo);
       }
       catch(e) {
         reject(e);
       }
-    }; xhr.onerror=()=>reject(Error('Connection lost. Your unsaved photos are ready to retry.'));xhr.ontimeout=()=>reject(Error('Saving took too long. Please retry; already saved photos will be recognised.'));xhr.send(JSON.stringify(body));
+    }; xhr.onerror=()=>reject(Error('Connection lost. Your unsaved photos are ready to retry.'));xhr.ontimeout=()=>reject(Error('Saving took too long. Please retry; already saved photos will be recognised.'));xhr.responseType='json';xhr.send(JSON.stringify(body));
   });
 }
 $('#upload-form').onsubmit=e=> {
