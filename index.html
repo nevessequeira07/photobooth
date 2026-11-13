@@ -1,0 +1,326 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="theme-color" content="#f7f7f2">
+    <title>
+      Our Evening — Neves
+      &amp;
+      Lavina
+    </title>
+    <meta name="description" content="One beautiful evening, seen through your eyes. Share your wedding photos and explore our memories together.">
+    <link rel="preconnect" href="https://images.unsplash.com">
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <header class="header">
+      <a class="brand" href="#" aria-label="Our Evening home">
+        <span class="brand-icon">
+          ✳
+        </span>
+        our evening
+        <span class="brand-dot">
+          .
+        </span>
+      </a>
+      <nav aria-label="Main navigation">
+        <a class="nav-gallery" href="#gallery">
+          The gallery
+        </a>
+        <button class="button small" data-upload>
+          <span aria-hidden="true">
+            ＋
+          </span>
+          Add your photos
+        </button>
+      </nav>
+    </header>
+    <main>
+      <section class="hero">
+        <div class="hero-copy">
+          <div class="eyebrow">
+            <span class="tiny-line">
+            </span>
+            OUR PEOPLE. OUR MEMORIES.
+          </div>
+          <h1>
+            One evening.
+            <br>
+            A thousand
+            <br>
+            <em>
+              little moments.
+            </em>
+          </h1>
+          <p>
+            The happy tears. The dance-floor moves.
+            <br>
+            The moments we might have missed.
+            <br>
+            We’d love to see our day through your eyes.
+          </p>
+          <div class="hero-actions">
+            <button class="button" data-upload>
+              <svg viewbox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+                <path d="M4 7h4l2-3h4l2 3h4v13H4z" />
+                <circle cx="12" cy="13" r="4" />
+              </svg>
+              Share your photos
+              <span aria-hidden="true">
+                ↗
+              </span>
+            </button>
+            <a href="#gallery" class="text-link">
+              Explore the gallery
+              <span aria-hidden="true">
+                ↓
+              </span>
+            </a>
+          </div>
+          <div class="hero-note">
+            <span aria-hidden="true">
+              ♡
+            </span>
+            No sign-up. Just your name and your memories.
+          </div>
+        </div>
+        <div class="hero-art">
+          <div class="photo-frame">
+            <img src="https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&amp;fit=crop&amp;w=1100&amp;q=85" alt="An intimate wedding celebration beneath glowing lights">
+            <div class="photo-shade">
+            </div>
+            <span class="photo-top">
+              THE BEGINNING OF OUR ALWAYS
+            </span>
+            <div class="couple">
+              Neves
+              <i>
+                &amp;
+              </i>
+              Lavina
+              <span>
+                26 DECEMBER 2026 · SAWANTWADI
+              </span>
+            </div>
+          </div>
+          <div class="photo-stamp">
+            <span>
+              A LITTLE LOVE
+            </span>
+            <b>
+              ♡
+            </b>
+            <span>
+              FROM EVERY LENS
+            </span>
+          </div>
+          <span class="photo-caption">
+            a day to remember, together.
+          </span>
+        </div>
+      </section>
+      <section class="gallery-section" id="gallery">
+        <div class="gallery-title">
+          <div>
+            <div class="eyebrow">
+              THE DAY, THROUGH YOUR EYES
+            </div>
+            <h2>
+              Our collective camera roll
+              <span>
+                .
+              </span>
+            </h2>
+          </div>
+          <div class="gallery-counter">
+            <span class="live-dot">
+            </span>
+            <span id="photo-count">
+              0 moments
+            </span>
+            <span class="muted">
+              &amp;
+              counting
+            </span>
+          </div>
+        </div>
+        <div class="gallery-toolbar">
+          <div class="tabs" role="tablist" aria-label="Photo filter">
+            <button role="tab" aria-selected="true" data-filter="all" class="tab active">
+              All moments
+              <span id="all-count">
+                0
+              </span>
+            </button>
+            <button role="tab" aria-selected="false" data-filter="mine" class="tab">
+              Your uploads
+              <span id="my-count">
+                0
+              </span>
+            </button>
+          </div>
+          <label class="sort-label">
+            Sort by
+            <select id="sort" aria-label="Sort photos">
+              <option value="newest">
+                Newest first
+              </option>
+              <option value="oldest">
+                Oldest first
+              </option>
+            </select>
+          </label>
+        </div>
+        <div class="gallery-controls">
+          <p id="gallery-status" role="status">
+            Loading memories...
+          </p>
+          <button id="refresh-gallery" class="text-link" type="button">
+            Refresh gallery
+          </button>
+        </div>
+        <div id="gallery-grid" class="gallery-grid">
+        </div>
+        <div id="empty-state" class="empty-state" hidden>
+          <span>
+            ♡
+          </span>
+          <h3>
+            Your perspective belongs here.
+          </h3>
+          <p>
+            Add a few photos to see them in your collection.
+          </p>
+          <button class="button" data-upload>
+            Add your photos
+          </button>
+        </div>
+        <div class="load-more-wrap">
+          <button id="load-more" class="button" hidden>
+            Load more memories
+          </button>
+        </div>
+        <div class="gallery-bottom">
+          <span class="little-star">
+            ✳
+          </span>
+          <p>
+            Every perspective makes the story a little more beautiful.
+          </p>
+          <button class="text-link" data-upload>
+            Add your little moments
+            <span>
+              ↗
+            </span>
+          </button>
+        </div>
+      </section>
+    </main>
+    <footer>
+      <a href="#" class="brand">
+        our evening.
+      </a>
+      <span>
+        Made of moments. Kept with love.
+      </span>
+      <span class="footer-love">
+        N
+        <i>
+          &amp;
+        </i>
+        L
+      </span>
+    </footer>
+    <dialog id="upload-dialog" class="upload-dialog">
+      <button class="close-button" data-close="upload-dialog" aria-label="Close upload dialog">
+        ×
+      </button>
+      <div class="eyebrow">
+        A MEMORY ONLY YOU CAPTURED
+      </div>
+      <h2>
+        Share a little
+        <br>
+        <em>
+          of the evening.
+        </em>
+      </h2>
+      <p class="dialog-intro">
+        Big moments, blurry dances, everything in between.
+      </p>
+      <form id="upload-form">
+        <label class="field-label" for="guest-name">
+          Your name
+          <span>
+            So we know who to thank
+          </span>
+        </label>
+        <input id="guest-name" name="name" placeholder="e.g. Ashley" required maxlength="60" autocomplete="given-name">
+        <button type="button" id="take-photo" class="button camera-button" aria-describedby="camera-note">
+          <svg viewbox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+            <path d="M4 7h4l2-3h4l2 3h4v13H4z" />
+            <circle cx="12" cy="13" r="4" />
+          </svg>
+          Take a photo
+        </button>
+        <p id="camera-note" class="local-note">
+          Enter your name, take a photo, then confirm it on your phone to upload it straight away.
+        </p>
+        <input id="camera-input" type="file" accept="image/*" capture="environment" class="visually-hidden" aria-label="Take a photo">
+        <label class="drop-zone" id="drop-zone" for="photo-input">
+          <span class="upload-symbol">
+            ↥
+          </span>
+          <strong>
+            Choose your photos
+          </strong>
+          <span>
+            or drop them here
+          </span>
+          <small>
+            JPG, PNG or WebP · up to 20 MB each
+          </small>
+        </label>
+        <input id="photo-input" type="file" accept="image/jpeg,image/png,image/webp" multiple class="visually-hidden">
+        <div id="selected-files" class="selected-files">
+        </div>
+        <p id="upload-error" class="error" role="alert">
+        </p>
+        <p id="upload-progress" role="status" aria-live="polite">
+        </p>
+        <p class="local-note">
+          Photos are saved as optimized JPEG copies (up to 2 MB). Everyone with this website link can view them. Your originals stay on your device.
+        </p>
+        <button class="button submit-button" type="submit" id="submit-upload">
+          Add to the gallery
+          <span>
+            ↗
+          </span>
+        </button>
+      </form>
+    </dialog>
+    <dialog id="lightbox" class="lightbox">
+      <button class="close-button" data-close="lightbox" aria-label="Close photo">
+        ×
+      </button>
+      <button class="photo-nav previous" aria-label="Previous photo">
+        ‹
+      </button>
+      <img id="lightbox-image" alt="">
+      <button class="photo-nav next" aria-label="Next photo">
+        ›
+      </button>
+      <div class="lightbox-caption">
+        <span id="lightbox-name">
+        </span>
+        <span id="lightbox-position">
+        </span>
+      </div>
+    </dialog>
+    <div class="toast" id="toast" role="status" hidden>
+    </div>
+    <script src="app.js">
+    </script>
+  </body>
+</html>
