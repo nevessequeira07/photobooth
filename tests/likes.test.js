@@ -39,3 +39,25 @@ test('Redis outage and malformed counts fail closed',async()=>{
     await assert.rejects(store.write('1','voter',true),/Likes storage unavailable|Invalid likes response/);
   }
 });
+
+test('configuration diagnostics distinguish missing settings and normalize copied values',async()=>{
+  assert.equal(createLikes({url:'',token:''}).configurationStatus,'missing_rest_url');
+  assert.equal(createLikes({url:'https://example.test',token:' '}).configurationStatus,'missing_rest_token');
+  const store=createLikes({folder:'42',url:' "https://example.test" ',token:' "test-only" ',fetchImpl:async(url,options)=>{
+    assert.equal(url.href,'https://example.test/');
+    assert.equal(options.headers.Authorization,'Bearer test-only');
+    return Response.json({result:[[0,0]]});
+  }});
+  assert.deepEqual(await store.read(['1'],'voter'),[{likes:0,liked:false}]);
+});
+
+test('diagnostic codes never include provider response or token',async()=>{
+  const {likesErrorCode}=require('../lib/likes');
+  for(const [status,expected] of [[401,'authentication_failed'],[403,'permission_denied'],[429,'rate_limited'],[500,'storage_unavailable']]){
+    const store=createLikes({folder:'42',url:'https://example.test',token:'secret-value',fetchImpl:async()=>new Response('secret-value provider details',{status})});
+    await assert.rejects(store.read(['1'],'voter'),error=>likesErrorCode(error)===expected&&!error.message.includes('secret-value'));
+  }
+  const invalid=createLikes({url:'rediss://example.test:6379',token:'secret',fetchImpl:async()=>assert.fail('Must reject before fetching')});
+  await assert.rejects(invalid.read(['1'],'voter'),error=>likesErrorCode(error)==='invalid_rest_url');
+  assert.equal(likesErrorCode(new Error('secret-value')),'storage_unavailable');
+});
