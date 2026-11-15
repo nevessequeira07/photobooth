@@ -40,3 +40,15 @@ Test a real upload and gallery refresh on the deployed URL before printing a QR 
 ## Camera capture
 
 Take a photo asks for a name first and opens a separate image input with capture="environment". Confirming the captured photo starts uploading only that photo; other selected files stay pending. Cancelling does not upload anything. Failed captures stay selected for manual retry. Mobile browser/OS controls the camera picker; desktop may show a file picker. JPEG optimization uses an image-element decode fallback if ImageBitmap is unavailable. HEIC decoding depends on the browser; if unsupported, use JPG/Most Compatible camera format. Real iOS Safari and Android Chrome device testing is still required on the deployed HTTPS site.
+
+## Downloading photos
+
+Every gallery photo and the full-size viewer has a Download photo link. Downloads use the stored image without further compression, with a safe filename and the matching JPG/PNG/WebP extension. Uploaded photos are optimized JPEG copies, not the original camera files. The browser controls the save location; on phones the file may appear in Downloads rather than the Photos app. Downloads enforce the same wedding-folder and image checks as previews.
+
+## Optional shared likes
+
+Create an Upstash Redis database and add `UPSTASH_REDIS_REST_URL` and `UPSTASH_REDIS_REST_TOKEN` to Vercel's server-side environment variables (and `.env.local` for local use), then redeploy. Use the read/write REST token. Never put it in browser code. See https://upstash.com/docs/redis/features/restapi for obtaining these credentials. Keep database eviction disabled so vote records are not silently removed. Likes remain hidden without configuration; a Redis outage does not stop gallery browsing or downloads.
+
+The heart toggles like/unlike, not a separate negative vote. A signed HttpOnly, SameSite=Strict browser cookie identifies an anonymous voter for one year; Vercel uses a Secure, host-only cookie. Redis sets enforce one active vote per browser/photo, and an atomic script updates membership and reads the count. Repeated `liked: true` requests cannot increment it again. There is a shared limit of 120 like requests per browser per minute. Buttons are disabled while saving. Gallery refresh loads current counts; there is no live push subscription.
+
+This is one vote per browser, not proof of one human: clearing cookies, private browsing, another device, or automation obtaining new cookies can bypass it. Sign-in or guest-specific invitations would be needed for stronger identity controls. Rotating the Redis token invalidates voter cookies (the token also signs these cookies). Keep one stable database and token across instances, and separate preview databases from production if you do not want preview likes mixed in. The database stores random voter identifiers and photo IDs, not guest names or image files. Downloads still work without cookies.

@@ -27,9 +27,77 @@ function saveLocal(key,value) {
 const mine=new Set(readLocal('evening-uploads',[]));
 $('#guest-name').value=readLocal('evening-name','');
 const visiblePhotos=()=>photos.filter(p=>filter==='all'||mine.has(p.id)).sort((a,b)=>$('#sort').value==='newest'?b.time-a.time:a.time-b.time);
+const downloadUrl=id=>`/api/photo?id=${encodeURIComponent(id)}&download=1`;
+let likesAvailable=false;
+const pendingLikes=new Set();
+const likeControls=new Map();
+const icons={
+  download:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M12 3v12m-5-5 5 5 5-5M4 15v5h16v-5"/></svg>',
+  heart:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1.1-1.1a5.5 5.5 0 0 0-7.8 7.8L12 21l8.8-8.6a5.5 5.5 0 0 0 0-7.8Z"/></svg>'
+};
+function icon(kind) {
+  const span=document.createElement('span');
+  span.className='action-icon';
+  span.innerHTML=icons[kind]; // Fixed application SVG, never user content.
+  return span;
+}
+function updateLikeControl(button,p) {
+  button.hidden=!likesAvailable;
+  button.disabled=pendingLikes.has(p.id);
+  button.setAttribute('aria-pressed',String(!!p.liked));
+  button.setAttribute('aria-label',`${p.liked?'Unlike':'Like'} photo shared by ${p.name}; ${p.likes||0} likes`);
+  button.title=p.liked?'Unlike photo':'Like photo';
+  button.classList.toggle('is-liked',!!p.liked);
+  button.count.textContent=String(p.likes||0);
+}
+function syncLikeControls(id) {
+  const p=photos.find(photo=>photo.id===id);
+  if(!p)return;
+  const button=likeControls.get(id);
+  if(button)updateLikeControl(button,p);
+  if(currentId===id)updateLikeControl(lightboxLike,p);
+}
+async function toggleLike(id) {
+  const p=photos.find(photo=>photo.id===id);
+  if(!likesAvailable||!p||pendingLikes.has(id))return;
+  pendingLikes.add(id);
+  syncLikeControls(id);
+  try {
+    const response=await fetch('/api/like',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({id,liked:!p.liked}),signal:AbortSignal.timeout(15000)});
+    const state=await response.json();
+    if(!response.ok)throw Error(state.error||'Unable to save your like. Please retry.');
+    if(!Number.isSafeInteger(state.likes)||state.likes<0||typeof state.liked!=='boolean')throw Error('Unable to confirm your like. Refresh the gallery.');
+    const current=photos.find(photo=>photo.id===id);
+    if(current)Object.assign(current,{likes:state.likes,liked:state.liked});
+  } catch(error) {
+    $('#toast').textContent=error.name==='TimeoutError'?'Your like could not be confirmed. Refresh the gallery before trying again.':error.message;
+    $('#toast').hidden=false;
+    clearTimeout(window.toastTimer);
+    window.toastTimer=setTimeout(()=>$('#toast').hidden=true,6000);
+  } finally {
+    pendingLikes.delete(id);
+    syncLikeControls(id);
+  }
+}
+function makeLikeButton(p) {
+  const button=document.createElement('button');
+  button.type='button';
+  button.className='photo-like photo-action';
+  button.count=document.createElement('span');
+  button.append(icon('heart'),button.count);
+  button.onclick=()=>toggleLike(p.id);
+  updateLikeControl(button,p);
+  return button;
+}
+const lightboxLike=$('#lightbox-like');
+lightboxLike.count=document.createElement('span');
+lightboxLike.append(icon('heart'),lightboxLike.count);
+lightboxLike.onclick=()=>toggleLike(currentId);
+$('#lightbox-download').replaceChildren(icon('download'));
 function render() {
   const grid=$('#gallery-grid');
   grid.replaceChildren();
+  likeControls.clear();
   const list=visiblePhotos();
   $('#empty-state').hidden=!!list.length||loading||!!galleryError;
   $('#all-count').textContent=photos.length+(hasMore?'+':'');
@@ -40,9 +108,12 @@ function render() {
   $('#load-more').disabled=loading;
   $('#refresh-gallery').disabled=loading;
   for(const p of list) {
-    const card=document.createElement('button');
+    const card=document.createElement('article');
     card.className='photo-card';
-    card.setAttribute('aria-label',`Open photo shared by ${p.name}`);
+    const open=document.createElement('button');
+    open.type='button';
+    open.className='photo-open';
+    open.setAttribute('aria-label',`Open photo shared by ${p.name}`);
     const wrap=document.createElement('div');
     wrap.className='image-wrap';
     const img=document.createElement('img');
@@ -71,10 +142,24 @@ function render() {
       badge.textContent='YOU';
       caption.append(badge);
     }
-    card.append(wrap,caption);
-    card.onclick=()=>openPhoto(p.id);
+    open.append(wrap,caption);
+    open.onclick=()=>openPhoto(p.id);
+    const download=document.createElement('a');
+    download.className='photo-download photo-action';
+    download.href=downloadUrl(p.id);
+    download.download='';
+    download.append(icon('download'));
+    download.title='Download photo';
+    download.setAttribute('aria-label',`Download photo shared by ${p.name}`);
+    const actions=document.createElement('div');
+    actions.className='photo-actions';
+    const like=makeLikeButton(p);
+    likeControls.set(p.id,like);
+    actions.append(like,download);
+    card.append(open,actions);
     grid.append(card);
   }
+  if(currentId)syncLikeControls(currentId);
 }
 async function loadGallery(append=false) {
   if(loading)return;
@@ -85,6 +170,7 @@ async function loadGallery(append=false) {
     const response=await fetch(`/api/gallery?page=${append?page+1:1}`);
     const data=await response.json();
     if(!response.ok)throw Error(data.error||'Unable to load the gallery.');
+    likesAvailable=data.likesAvailable===true;
     photos=Array.from(new Map((append?[...photos,...data.photos]:data.photos).map(p=>[p.id,p])).values());
     page=data.page;
     hasMore=data.hasMore;
@@ -331,6 +417,8 @@ function openPhoto(id) {
   $('#lightbox-image').src=p.src;
   $('#lightbox-image').alt=p.alt;
   $('#lightbox-name').textContent=`Shared by ${p.name}`;
+  $('#lightbox-download').href=downloadUrl(p.id);
+  updateLikeControl(lightboxLike,p);
   const list=visiblePhotos();
   $('#lightbox-position').textContent=`${list.findIndex(x=>x.id===id)+1} / ${list.length}`;
   if(!$('#lightbox').open)$('#lightbox').showModal();

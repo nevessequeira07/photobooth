@@ -13,7 +13,8 @@ test('page initializes and every Add photos button opens the dialog', async()=> 
       },addEventListener() {
       },replaceChildren() {
       },setAttribute() {
-      },append() {
+      },append(...children) {
+        this.children=(this.children||[]).concat(children);
       },click() {
         this.clicked=true;
       },reportValidity() {
@@ -67,4 +68,32 @@ test('page initializes and every Add photos button opens the dialog', async()=> 
    }
  };
  await assert.rejects(vm.runInNewContext("upload({},'Photo 1 of 1')",context), /Upload failed \(HTTP 404\)/);
+ vm.runInNewContext("photos=[{id:'123',name:'Guest',src:'/api/photo?id=123',alt:'Photo',time:1},{id:'456',name:'Other guest',src:'/api/photo?id=456',alt:'Photo',time:2}];render();openPhoto('123');",context);
+ const card=elements.get('#gallery-grid').children[0];
+ assert.equal(card.children[1].children[1].title,'Download photo');
+ assert.equal(card.children[1].children[1].href,'/api/photo?id=456&download=1');
+ assert.equal(card.children[1].children[1].download,'');
+ assert.equal(elements.get('#lightbox-download').href,'/api/photo?id=123&download=1');
+ elements.get('.next').onclick();
+ assert.equal(elements.get('#lightbox-download').href,'/api/photo?id=456&download=1');
+ context.AbortSignal=AbortSignal;
+ let likeRequests=0,finishLike;
+ context.fetch=async(url,options)=>{
+   assert.equal(url,'/api/like');
+   assert.deepEqual(JSON.parse(options.body),{id:'456',liked:true});
+   likeRequests++;
+   return new Promise(resolve=>{finishLike=()=>resolve({ok:true,json:async()=>({likes:1,liked:true})});});
+ };
+ vm.runInNewContext('likesAvailable=true;var firstLike=toggleLike("456");toggleLike("456");',context);
+ assert.equal(likeRequests,1);
+ assert.equal(elements.get('#lightbox-like').disabled,true);
+ finishLike();await context.firstLike;
+ assert.equal(elements.get('#lightbox-like').count.textContent,'1');
+ assert.equal(elements.get('#lightbox-like').disabled,false);
+ context.fetch=async(url,options)=>{
+   assert.equal(JSON.parse(options.body).liked,false);
+   return {ok:true,json:async()=>({likes:0,liked:false})};
+ };
+ await vm.runInNewContext('toggleLike("456")',context);
+ assert.equal(elements.get('#lightbox-like').count.textContent,'0');
 });
