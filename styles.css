@@ -1013,9 +1013,12 @@ button:disabled {
   outline-offset:3px;
 }
 .lightbox-caption { align-items:center; flex-wrap:wrap; gap:12px; }
+.photo-media {
+  position:relative;
+}
 .photo-actions {
   position:absolute;
-  top:10px;
+  bottom:10px;
   right:10px;
   display:flex;
   gap:6px;

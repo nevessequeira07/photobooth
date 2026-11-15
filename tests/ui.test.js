@@ -70,9 +70,9 @@ test('page initializes and every Add photos button opens the dialog', async()=> 
  await assert.rejects(vm.runInNewContext("upload({},'Photo 1 of 1')",context), /Upload failed \(HTTP 404\)/);
  vm.runInNewContext("photos=[{id:'123',name:'Guest',src:'/api/photo?id=123',alt:'Photo',time:1},{id:'456',name:'Other guest',src:'/api/photo?id=456',alt:'Photo',time:2}];render();openPhoto('123');",context);
  const card=elements.get('#gallery-grid').children[0];
- assert.equal(card.children[1].children[1].title,'Download photo');
- assert.equal(card.children[1].children[1].href,'/api/photo?id=456&download=1');
- assert.equal(card.children[1].children[1].download,'');
+ assert.equal(card.children[0].children[1].children[1].title,'Download photo');
+ assert.equal(card.children[0].children[1].children[1].href,'/api/photo?id=456&download=1');
+ assert.equal(card.children[0].children[1].children[1].download,'');
  assert.equal(elements.get('#lightbox-download').href,'/api/photo?id=123&download=1');
  elements.get('.next').onclick();
  assert.equal(elements.get('#lightbox-download').href,'/api/photo?id=456&download=1');

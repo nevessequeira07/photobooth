@@ -142,7 +142,7 @@ function render() {
       badge.textContent='YOU';
       caption.append(badge);
     }
-    open.append(wrap,caption);
+    open.append(wrap);
     open.onclick=()=>openPhoto(p.id);
     const download=document.createElement('a');
     download.className='photo-download photo-action';
@@ -156,7 +156,10 @@ function render() {
     const like=makeLikeButton(p);
     likeControls.set(p.id,like);
     actions.append(like,download);
-    card.append(open,actions);
+    const media=document.createElement('div');
+    media.className='photo-media';
+    media.append(open,actions);
+    card.append(media,caption);
     grid.append(card);
   }
   if(currentId)syncLikeControls(currentId);
