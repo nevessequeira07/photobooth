@@ -62,6 +62,7 @@ async function toggleLike(id) {
   if(!likesAvailable||!p||pendingLikes.has(id))return;
   pendingLikes.add(id);
   syncLikeControls(id);
+  let animateLike=false;
   try {
     const response=await fetch('/api/like',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({id,liked:!p.liked}),signal:AbortSignal.timeout(15000)});
     const state=await response.json();
@@ -69,6 +70,7 @@ async function toggleLike(id) {
     if(!Number.isSafeInteger(state.likes)||state.likes<0||typeof state.liked!=='boolean')throw Error('Unable to confirm your like. Refresh the gallery.');
     const current=photos.find(photo=>photo.id===id);
     if(current)Object.assign(current,{likes:state.likes,liked:state.liked});
+    animateLike=state.liked;
   } catch(error) {
     $('#toast').textContent=error.name==='TimeoutError'?'Your like could not be confirmed. Refresh the gallery before trying again.':error.message;
     $('#toast').hidden=false;
@@ -77,6 +79,14 @@ async function toggleLike(id) {
   } finally {
     pendingLikes.delete(id);
     syncLikeControls(id);
+    if(animateLike) {
+      const controls=[likeControls.get(id),currentId===id?lightboxLike:null];
+      for(const button of controls) {
+        if(!button)continue;
+        button.classList.add('like-pop');
+        setTimeout(()=>button.classList.remove('like-pop'),300);
+      }
+    }
   }
 }
 function makeLikeButton(p) {
@@ -204,7 +214,7 @@ window.addEventListener('beforeunload',e=> {
 });
 document.querySelectorAll('[data-filter]').forEach(b=>b.onclick=()=> {
   filter=b.dataset.filter;document.querySelectorAll('[data-filter]').forEach(t=> {
-    t.classList.toggle('active',t===b);t.setAttribute('aria-selected',String(t===b));
+    t.classList.toggle('active',t===b);t.setAttribute('aria-pressed',String(t===b));
   });render();
 });
 $('#sort').onchange=render;
@@ -438,3 +448,4 @@ $('#lightbox').onkeydown=e=> {
   if(e.key==='ArrowRight')navigate(1);
 };
 loadGallery();
+
