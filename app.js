@@ -109,6 +109,7 @@ function render() {
   grid.replaceChildren();
   likeControls.clear();
   const list=visiblePhotos();
+  $('#gallery-loader').hidden=!loading||photos.length>0;
   $('#empty-state').hidden=!!list.length||loading||!!galleryError;
   $('#all-count').textContent=photos.length+(hasMore?'+':'');
   $('#my-count').textContent=photos.filter(p=>mine.has(p.id)).length;
@@ -448,4 +449,5 @@ $('#lightbox').onkeydown=e=> {
   if(e.key==='ArrowRight')navigate(1);
 };
 loadGallery();
+
 
