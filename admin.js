@@ -20,12 +20,13 @@ function render(){
     const date=document.createElement('small');date.textContent=new Date(p.time).toLocaleDateString();
     label.append(img,check,name,date);$('#admin-grid').append(label);
   }
+  document.getElementById("photo-count").textContent=photos.length+(photos.length===1?' photo loaded':' photos loaded');
   updateSelection();
 }
 function updateSelection(){$('#selection').textContent=selected.size+' selected';$('#delete').disabled=busy||!selected.size;}
 async function load(append=false){
   if(busy)return;lock(true);message('Loading photos…');
-  try{const data=await api('photos&page='+(append?page+1:1));photos=append?[...photos,...data.photos]:data.photos;page=data.page;if(!append)selected.clear();$('#more').hidden=!data.hasMore;render();message(photos.length?photos.length+' photos loaded.':'No photos in the album yet.');}
+  try{const data=await api('photos&page='+(append?page+1:1));photos=append?[...photos,...data.photos]:data.photos;page=data.page;if(!append)selected.clear();$('#more').hidden=!data.hasMore;render();message(photos.length?'':'No photos in the album yet.');}
   catch(e){message(e.message);}finally{lock(false);}
 }
 $('#login-form').onsubmit=async e=>{e.preventDefault();if(busy)return;lock(true);try{await api('login',{password:$('#password').value});$('#password').value='';signedIn(true);lock(false);await load();}catch(e){message(e.message);}finally{lock(false);}};
@@ -41,3 +42,6 @@ $('#confirm-delete').onclick=async()=>{
 };
 $('#logout').onclick=async()=>{if(busy)return;lock(true);try{await api('logout',{});signedIn(false);message('Signed out.');}catch(e){message(e.message);}finally{lock(false);}};
 (async()=>{lock(true);try{await api('session');signedIn(true);lock(false);await load();}catch(e){signedIn(false);message(e.message==='Please sign in.'?'Enter your password to manage the album.':e.message);}finally{lock(false);}})();
+
+
+

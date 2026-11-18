@@ -1,10 +1,30 @@
 <!doctype html>
-<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow"><title>Manage wedding album</title><link rel="stylesheet" href="/styles.css"><link rel="stylesheet" href="/admin.css"></head>
-<body><header class="header"><a class="brand" href="/">Neves &amp; Lavina</a><button id="logout" class="button small" hidden>Sign out</button></header>
-<main class="admin-main"><p class="eyebrow">HOST DASHBOARD</p><h1>Manage your album</h1>
+<html lang="en">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow"><title>Manage wedding album</title><link rel="stylesheet" href="/styles.css"><link rel="stylesheet" href="/admin.css"></head>
+<body class="admin-page">
+<a class="skip-link" href="#main">Skip to dashboard</a>
+<header class="admin-header">
+<a class="admin-brand" href="/" aria-label="Neves and Lavina - back to gallery"><img class="brand-monogram" src="https://neveswedslavina.vercel.app/assets/gold-monogram-transparent.png" alt="" width="64" height="64"></a>
+<nav aria-label="Dashboard navigation"><a class="gallery-link" href="/">View gallery <span aria-hidden="true">↗</span></a><button id="logout" class="button secondary small" hidden>Sign out</button></nav>
+</header>
+<main id="main" class="admin-main">
+<div class="admin-intro"><div><h1>Your wedding album</h1></div></div>
 <p id="status" role="status" aria-live="polite"></p>
-<form id="login-form"><label class="field-label" for="password">Admin password</label><input id="password" type="password" autocomplete="current-password" required maxlength="1024"><button class="button" type="submit">Sign in</button></form>
-<section id="dashboard" hidden aria-label="Photo management"><p>Select up to 20 photos to remove from the gallery. Deleted photos go to Drime's Trash.</p>
-<div class="admin-toolbar"><span id="selection">0 selected</span><button id="clear" class="text-link">Clear selection</button><button id="refresh" class="text-link">Refresh</button><button id="delete" class="button" disabled>Delete selected</button></div>
-<div id="admin-grid" class="gallery-grid"></div><button id="more" class="button" hidden>Load more</button></section>
-<dialog id="confirm-dialog" class="upload-dialog" aria-labelledby="confirm-title"><h2 id="confirm-title">Delete selected photos?</h2><p id="confirm-count"></p><p>They will be removed from the shared gallery and sent to Drime's Trash.</p><div class="confirm-actions"><button id="cancel" class="button camera-button">Cancel</button><button id="confirm-delete" class="button">Delete photos</button></div></dialog></main><script src="/admin.js"></script></body></html>
+<form id="login-form" class="login-card">
+<span class="login-mark" aria-hidden="true">♡</span><p class="eyebrow">JUST FOR THE HOSTS</p><h2>Welcome back</h2><p class="login-copy">Sign in to curate the moments you’ll keep.</p>
+<label class="field-label" for="password">Admin password</label><input id="password" type="password" autocomplete="current-password" required maxlength="1024" placeholder="Enter your password"><button class="button" type="submit">Sign in to your album <span aria-hidden="true">→</span></button><a class="login-back" href="/">Back to the celebration</a>
+</form>
+<section id="dashboard" hidden aria-label="Photo management">
+<div class="album-heading"><span id="photo-count" class="count-badge">0 photos loaded</span><button id="refresh" class="button secondary"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M20 11a8 8 0 1 0-2.4 6.7M20 4v7h-7"/></svg>Refresh</button></div>
+<p class="album-help">Tap a photo to select it. You can remove up to 20 at a time.</p>
+<div class="admin-toolbar"><div class="selection-info"><span class="selection-dot" aria-hidden="true"></span><strong id="selection">0 selected</strong><span class="selection-hint">Choose the moments to remove</span></div><div class="toolbar-actions"><button id="clear" class="text-link">Clear selection</button><button id="delete" class="button danger" disabled><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13M10 11v5M14 11v5"/></svg>Delete selected</button></div></div>
+<div id="admin-grid" class="gallery-grid"></div><button id="more" class="button secondary" hidden>Load more memories <span aria-hidden="true">↓</span></button>
+<p class="trash-note"><span aria-hidden="true">♡</span> A little peace of mind: removed photos go to Drime’s Trash.</p>
+</section>
+<footer class="admin-footer">Made for the moments that matter.</footer>
+<dialog id="confirm-dialog" class="upload-dialog" aria-labelledby="confirm-title" aria-describedby="confirm-count confirm-description"><p class="eyebrow">A QUICK CHECK</p><h2 id="confirm-title">Remove these moments?</h2><p id="confirm-count"></p><p id="confirm-description">They will be removed from the shared gallery and sent to Drime’s Trash.</p><div class="confirm-actions"><button id="cancel" class="button secondary">Keep photos</button><button id="confirm-delete" class="button danger">Delete photos</button></div></dialog>
+</main><script src="/admin.js"></script></body></html>
+
+
+
+
