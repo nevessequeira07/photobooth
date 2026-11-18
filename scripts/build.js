@@ -5,5 +5,5 @@ const out=path.join(root,'dist');
 fs.mkdirSync(out, {
   recursive:true
 });
-for(const file of ['index.html','styles.css','app.js'])fs.copyFileSync(path.join(root,file),path.join(out,file));
+for(const file of ['index.html','styles.css','app.js','admin.html','admin.css','admin.js'])fs.copyFileSync(path.join(root,file),path.join(out,file));
 console.log('Built public UI files. Secrets are excluded.');

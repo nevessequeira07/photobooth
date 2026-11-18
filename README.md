@@ -52,3 +52,11 @@ Create an Upstash Redis database and add `UPSTASH_REDIS_REST_URL` and `UPSTASH_R
 The heart toggles like/unlike, not a separate negative vote. A signed HttpOnly, SameSite=Strict browser cookie identifies an anonymous voter for one year; Vercel uses a Secure, host-only cookie. Redis sets enforce one active vote per browser/photo, and an atomic script updates membership and reads the count. Repeated `liked: true` requests cannot increment it again. There is a shared limit of 120 like requests per browser per minute. Buttons are disabled while saving. Gallery refresh loads current counts; there is no live push subscription.
 
 This is one vote per browser, not proof of one human: clearing cookies, private browsing, another device, or automation obtaining new cookies can bypass it. Sign-in or guest-specific invitations would be needed for stronger identity controls. Rotating the Redis token invalidates voter cookies (the token also signs these cookies). Keep one stable database and token across instances, and separate preview databases from production if you do not want preview likes mixed in. The database stores random voter identifiers and photo IDs, not guest names or image files. Downloads still work without cookies.
+
+## Host dashboard
+
+Open `/admin` to manage photos. Set `ADMIN_PASSWORD` to a unique password of at least 16 characters in `.env.local` for local use and in Vercel's server-side environment settings for deployment. Restart the local server or redeploy after changing it. Do not commit the password.
+
+Sign in, select up to 20 photos, and confirm deletion. The server verifies every photo belongs to the configured wedding folder and sends it to Drime's Trash (`deleteForever: false`). Guests do not need to sign in. Sessions expire after eight hours; changing the password invalidates existing sessions. Sign out clears this browser's session cookie. Login throttling is best effort per server instance, not a distributed rate limit.
+
+The delete endpoint is covered by mocked tests; no real photos are deleted during automated validation.

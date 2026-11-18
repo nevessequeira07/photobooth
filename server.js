@@ -12,6 +12,9 @@ const api = require('./lib/wedding-api').createApi();
 // Serve only public UI files. Configuration, tokens, logs and source archives
 // must never be downloadable through the preview server.
 const publicFiles = new Map([ ['/', ['index.html', 'text/html; charset=utf-8']], ['/index.html', ['index.html', 'text/html; charset=utf-8']], ['/styles.css', ['styles.css', 'text/css; charset=utf-8']], ['/app.js', ['app.js', 'text/javascript; charset=utf-8']], ]);
+for (const route of ['/admin','/admin/','/admin.html']) publicFiles.set(route,['admin.html','text/html; charset=utf-8']);
+publicFiles.set('/admin.js',['admin.js','text/javascript; charset=utf-8']);
+publicFiles.set('/admin.css',['admin.css','text/css; charset=utf-8']);
 http.createServer((req, res) => {
   let pathname; try {
     pathname = decodeURIComponent(new URL(req.url, 'http://localhost').pathname);
@@ -32,3 +35,4 @@ http.createServer((req, res) => {
     res.setHeader('Content-Type', entry[1]); res.setHeader('X-Content-Type-Options', 'nosniff'); res.end(req.method === 'HEAD' ? undefined : data);
   });
 }).listen(Number(process.env.PORT)||5173, '127.0.0.1', () => console.log(`Local: http://127.0.0.1:${Number(process.env.PORT)||5173}`));
+

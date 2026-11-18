@@ -1,0 +1,10 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow"><title>Manage wedding album</title><link rel="stylesheet" href="/styles.css"><link rel="stylesheet" href="/admin.css"></head>
+<body><header class="header"><a class="brand" href="/">Neves &amp; Lavina</a><button id="logout" class="button small" hidden>Sign out</button></header>
+<main class="admin-main"><p class="eyebrow">HOST DASHBOARD</p><h1>Manage your album</h1>
+<p id="status" role="status" aria-live="polite"></p>
+<form id="login-form"><label class="field-label" for="password">Admin password</label><input id="password" type="password" autocomplete="current-password" required maxlength="1024"><button class="button" type="submit">Sign in</button></form>
+<section id="dashboard" hidden aria-label="Photo management"><p>Select up to 20 photos to remove from the gallery. Deleted photos go to Drime's Trash.</p>
+<div class="admin-toolbar"><span id="selection">0 selected</span><button id="clear" class="text-link">Clear selection</button><button id="refresh" class="text-link">Refresh</button><button id="delete" class="button" disabled>Delete selected</button></div>
+<div id="admin-grid" class="gallery-grid"></div><button id="more" class="button" hidden>Load more</button></section>
+<dialog id="confirm-dialog" class="upload-dialog" aria-labelledby="confirm-title"><h2 id="confirm-title">Delete selected photos?</h2><p id="confirm-count"></p><p>They will be removed from the shared gallery and sent to Drime's Trash.</p><div class="confirm-actions"><button id="cancel" class="button camera-button">Cancel</button><button id="confirm-delete" class="button">Delete photos</button></div></dialog></main><script src="/admin.js"></script></body></html>
